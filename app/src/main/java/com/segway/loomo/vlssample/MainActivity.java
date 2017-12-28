@@ -7,14 +7,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.segway.robot.algo.Pose2D;
+import com.segway.robot.algo.PoseVLS;
+import com.segway.robot.algo.VLSPoseListener;
 import com.segway.robot.sdk.base.bind.ServiceBinder;
 import com.segway.robot.sdk.locomotion.sbv.Base;
 import com.segway.robot.sdk.locomotion.sbv.StartVLSListener;
 
 /**
  * @author jacob
- * This sample shows developers how to use visual localization system for navigation
+ *         This sample shows developers how to use visual localization system for navigation
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -50,10 +51,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void startNavigation() {
-        // set navigation data source
-        mBase.setNavigationDataSource(Base.NAVIGATION_SOURCE_TYPE_VLS);
         mBase.cleanOriginalPoint();
-        Pose2D pose2D = mBase.getOdometryPose(-1);
+        PoseVLS pose2D = mBase.getVLSPose(-1);
         mBase.setOriginalPoint(pose2D);
         mBase.addCheckPoint(1f, 0, (float) (Math.PI / 2));
         mBase.addCheckPoint(1f, 1f, (float) (Math.PI));
@@ -61,11 +60,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBase.addCheckPoint(0, 0, 0);
     }
 
+    private VLSPoseListener vlsPoseListener = new VLSPoseListener() {
+        @Override
+        public void onVLSPoseUpdate(long timestamp, float pose_x, float pose_y, float pose_theta, float v, float w) {
+            Log.d(TAG, "onVLSPoseUpdate() called with: timestamp = [" + timestamp + "], pose_x = [" + pose_x + "], pose_y = [" + pose_y + "], pose_theta = [" + pose_theta + "], v = [" + v + "], w = [" + w + "]");
+        }
+    };
+
 
     private StartVLSListener mStartVLSListener = new StartVLSListener() {
         @Override
         public void onOpened() {
             Log.d(TAG, "onOpened() called");
+
+            // set navigation data source
+            mBase.setNavigationDataSource(Base.NAVIGATION_SOURCE_TYPE_VLS);
+            mBase.setVLSPoseListener(vlsPoseListener);
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -102,7 +112,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(MainActivity.this, "failed when binding service!", Toast.LENGTH_LONG).show();
                 }
             });
-
         }
     };
 }
