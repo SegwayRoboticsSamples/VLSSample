@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void startNavigation() {
         mBase.cleanOriginalPoint();
-        PoseVLS pose2D = mBase.getVLSPose(-1);
-        mBase.setOriginalPoint(pose2D);
+        PoseVLS poseVLS = mBase.getVLSPose(-1);
+        mBase.setOriginalPoint(poseVLS);
         mBase.addCheckPoint(1f, 0, (float) (Math.PI / 2));
         mBase.addCheckPoint(1f, 1f, (float) (Math.PI));
         mBase.addCheckPoint(0f, 1f, (float) (-Math.PI / 2));
