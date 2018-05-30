@@ -29,13 +29,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mStart = (Button) findViewById(R.id.start);
-        mStop = (Button) findViewById(R.id.stop);
+        mStart = findViewById(R.id.start);
+        mStop = findViewById(R.id.stop);
         mStart.setOnClickListener(this);
         mStop.setOnClickListener(this);
 
         mBase = Base.getInstance();
         mBase.bindService(this, mBaseBindStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mBase.unbindService();
+        finish();
     }
 
     @Override
@@ -54,10 +61,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBase.cleanOriginalPoint();
         PoseVLS poseVLS = mBase.getVLSPose(-1);
         mBase.setOriginalPoint(poseVLS);
-        mBase.addCheckPoint(1f, 0, (float) (Math.PI / 2));
-        mBase.addCheckPoint(1f, 1f, (float) (Math.PI));
-        mBase.addCheckPoint(0f, 1f, (float) (-Math.PI / 2));
-        mBase.addCheckPoint(0, 0, 0);
+        mBase.addCheckPoint(1f, 0);
+        mBase.addCheckPoint(1f, 1f);
+        mBase.addCheckPoint(0f, 1f);
+        mBase.addCheckPoint(0, 0);
     }
 
     private VLSPoseListener vlsPoseListener = new VLSPoseListener() {
